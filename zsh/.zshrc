@@ -7,6 +7,8 @@ HIST_FILE=~/.zsh_history
 HISTSIZE=5000
 SAVEHIST=5000
 
+export EDITOR="nvim"
+
 source "$XDG_Z/aliases.zsh"
 
 #### LOAD PLUGINS ####
