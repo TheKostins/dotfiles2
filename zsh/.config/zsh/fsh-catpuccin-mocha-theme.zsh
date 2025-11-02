@@ -1,0 +1,21 @@
+# --- Catppuccin Mocha 
+
+FAST_HIGHLIGHT_STYLES[default]="fg=#CDD6F4"
+FAST_HIGHLIGHT_STYLES[command]="fg=#89B4FA,bold"
+FAST_HIGHLIGHT_STYLES[builtin]="fg=#89DCEB,bold"
+FAST_HIGHLIGHT_STYLES[alias]="fg=#94E2D5,bold"
+FAST_HIGHLIGHT_STYLES[function]="fg=#B4BEFE"
+FAST_HIGHLIGHT_STYLES[parameter]="fg=#FAB387"
+FAST_HIGHLIGHT_STYLES[option]="fg=#A6E3A1"
+FAST_HIGHLIGHT_STYLES[path]="fg=#74C7EC,underline"
+FAST_HIGHLIGHT_STYLES[quote]="fg=#F5C2E7"
+FAST_HIGHLIGHT_STYLES[double-quoted-argument]="fg=#F5C2E7"
+FAST_HIGHLIGHT_STYLES[single-hyphen-option]="fg=#F5E0DC"
+FAST_HIGHLIGHT_STYLES[double-hyphen-option]="fg=#F5E0DC"
+FAST_HIGHLIGHT_STYLES[comment]="fg=#6C7086,italic"
+FAST_HIGHLIGHT_STYLES[unknown-token]="fg=#F38BA8,bold"
+FAST_HIGHLIGHT_STYLES[separator]="fg=#585B70"
+FAST_HIGHLIGHT_STYLES[redirection]="fg=#89DCEB"
+FAST_HIGHLIGHT_STYLES[history-expansion]="fg=#FAB387,bold"
+FAST_HIGHLIGHT_STYLES[dollar-double-quoted-argument]="fg=#F9E2AF"
+
