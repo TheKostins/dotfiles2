@@ -4,3 +4,6 @@ font-size = 16
 
 background-opacity = 0.9
 background-blur = 60
+
+window-width = 140
+window-height = 30
