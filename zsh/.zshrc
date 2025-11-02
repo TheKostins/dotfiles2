@@ -1,4 +1,5 @@
-export ZDOTDIR="$HOME/.config/zsh"
+zmodload zsh/zprof
+export XDG_Z="$HOME/.config/zsh"
 export XDG_CONFIG_HOME="$HOME/.config"
 
 setopt extendedglob autocd correct
@@ -6,14 +7,21 @@ HIST_FILE=~/.zsh_history
 HISTSIZE=5000
 SAVEHIST=5000
 
-source "$ZDOTDIR/aliases.zsh"
+source "$XDG_Z/aliases.zsh"
 
 #### LOAD PLUGINS ####
 FAST_THEME="XDG:catppuccin-mocha"
-source $ZDOTDIR/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
-source $ZDOTDIR/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-fpath=($ZDOTDIR/plugins/zsh-completions/src $fpath)
-autoload -Uz compinit && compinit -d ~/.cache/zcompdump
+source $XDG_Z/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
+source $XDG_Z/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+fpath=($XDG_Z/plugins/zsh-completions/src $fpath)
+autoload -Uz compinit
+
+autoload -Uz compinit
+if [[ -n ~/.cache/zcompdump && -f ~/.cache/zcompdump ]]; then
+  compinit -C -d ~/.cache/zcompdump
+else
+  compinit -d ~/.cache/zcompdump
+fi
 
 unset SSH_AGENT_PID
 if [ "${gnupg_SSH_AUTH_SOCK_by:-0}" -ne $$ ]; then
@@ -34,7 +42,6 @@ export FZF_DEFAULT_OPTS=" \
 --color=border:#6C7086,label:#CDD6F4"
 
 eval "$(fzf --zsh)"
-
 
 
 # Added by LM Studio CLI (lms)
