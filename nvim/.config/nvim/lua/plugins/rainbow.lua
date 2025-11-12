@@ -28,15 +28,15 @@ return {
         },
       })
 
-      -- ── Catppuccin Mocha Palette ─────────────────────────────────────────────
+      -- ── Gruvbox Dark Palette ────────────────────────────────────────────────
       local colors = {
-        red = "#F38BA8",
-        yellow = "#F9E2AF",
-        blue = "#89B4FA",
-        orange = "#FAB387",
-        green = "#A6E3A1",
-        violet = "#CBA6F7",
-        cyan = "#94E2D5",
+        red = "#FB4934",
+        yellow = "#FABD2F",
+        blue = "#83A598",
+        orange = "#FE8019",
+        green = "#B8BB26",
+        violet = "#D3869B",
+        cyan = "#8EC07C",
       }
 
       -- ── Apply highlight groups (link-safe) ───────────────────────────────────
@@ -49,7 +49,7 @@ return {
       vim.api.nvim_set_hl(0, "RainbowDelimiterCyan", { fg = colors.cyan })
 
       -- optional: slightly dim comment delimiters for less visual noise
-      vim.api.nvim_set_hl(0, "RainbowDelimiterComment", { fg = "#585B70" })
+      vim.api.nvim_set_hl(0, "RainbowDelimiterComment", { fg = "#665C54" })
     end,
   },
 }
