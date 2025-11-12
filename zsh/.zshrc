@@ -12,7 +12,7 @@ export EDITOR="nvim"
 source "$XDG_Z/aliases.zsh"
 
 #### LOAD PLUGINS ####
-FAST_THEME="XDG:catppuccin-mocha"
+FAST_THEME="XDG:gruvbox-dark"
 source $XDG_Z/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
 source $XDG_Z/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 fpath=($XDG_Z/plugins/zsh-completions/src $fpath)
@@ -35,13 +35,13 @@ gpg-connect-agent updatestartuptty /bye >/dev/null
 eval "$(zoxide init zsh)"
 eval "$(starship init zsh)"
 
-# FZF catppuccin mocha theme
+# FZF Gruvbox Dark theme
 export FZF_DEFAULT_OPTS=" \
---color=bg+:#313244,bg:#1E1E2E,spinner:#F5E0DC,hl:#F38BA8 \
---color=fg:#CDD6F4,header:#F38BA8,info:#CBA6F7,pointer:#F5E0DC \
---color=marker:#B4BEFE,fg+:#CDD6F4,prompt:#CBA6F7,hl+:#F38BA8 \
---color=selected-bg:#45475A \
---color=border:#6C7086,label:#CDD6F4"
+--color=bg+:#3C3836,bg:#1D2021,spinner:#D79921,hl:#FABD2F \
+--color=fg:#EBDBB2,header:#FB4934,info:#83A598,pointer:#FB4934 \
+--color=marker:#FE8019,fg+:#EBDBB2,prompt:#D3869B,hl+:#FABD2F \
+--color=selected-bg:#504945 \
+--color=border:#665C54,label:#EBDBB2"
 
 eval "$(fzf --zsh)"
 
@@ -49,4 +49,3 @@ eval "$(fzf --zsh)"
 # Added by LM Studio CLI (lms)
 export PATH="$PATH:/Users/kost/.lmstudio/bin"
 # End of LM Studio CLI section
-
