@@ -7,7 +7,7 @@ $cmd_duration
 """
 
 format = """
-$username$hostname$directory$git_branch $character
+$username$hostname$directory$git_branch$conda $character
 """
 
 [palettes.gruvbox_dark]
@@ -57,7 +57,7 @@ fish_style_pwd_dir_length = 1
 format = '[󰉋 $path]($style)'
 
 [cmd_duration]
-min_time = 2000  # only show if > 2 s
+min_time = 2000                           # only show if > 2 s
 format = " took [$duration](bold yellow)"
 
 [character]
