@@ -2,8 +2,11 @@ theme = "Gruvbox Dark"
 font-family = "JetBrainsMono Nerd Font"
 font-size = 16
 
-background-opacity = 0.9
+background-opacity = 0.8
 background-blur = 60
+
+macos-titlebar-style = transparent
+macos-option-as-alt = true
 
 window-width = 140
 window-height = 30

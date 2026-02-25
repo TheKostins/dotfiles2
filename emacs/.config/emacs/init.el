@@ -75,9 +75,14 @@
               completion-category-overrides '((file (styles basic partial-completion)))))
 (use-package marginalia :init (marginalia-mode 1))
 (use-package consult
-  :config
-  (global-set-key (kbd "C-x b") 'consult-buffer)
- ) 
+  :bind (:map global-map
+	      ("C-x b" . consult-buffer)
+	      ("C-x C-b" . consult-buffer)
+	      ("C-s C-l" . consult-line)
+	      ("C-s C-g" . consult-ripgrep))
+  :init
+  (dolist (key '("C-s" "C-x b"))
+    (unbind-key (kbd key)))) 
 
 (use-package corfu
   :init (global-corfu-mode)
@@ -107,8 +112,7 @@
   :ensure t
   :mode ("\\.tex\\'" . LaTeX-mode)     ;; ensure AUCTeX takes over .tex files
   :config
-  (setq TeX-auto-save t
-        TeX-parse-self t
+  (setq TeX-parse-self t
         TeX-PDF-mode t)
 
   ;; View via PDF Tools + SyncTeX
@@ -125,25 +129,165 @@
             (prettify-symbols-mode 1)))
 )
 
-;; --- Remove the broken CAPF composition --------------------------------------
-;; Your original code tried to combine an internal prettify function as a CAPF.
-;; Use a simple, solid CAPF stack instead:
-(defun my/latex-capf ()
-  (setq-local completion-at-point-functions
-              (list #'TeX--completion-at-point
-                    #'cape-tex
-                    #'cape-dabbrev)))
+(use-package auctex-latexmk
+  :custom
+   (auctex-latexmk-inherit-TeX-PDF-mode t)
+   :config
+   (auctex-latexmk-setup))
 
-(add-hook 'LaTeX-mode-hook #'my/latex-capf)
+
+
+;;;; ---------------- LaTeX: single setup (corfu + cape + cdlatex + spell EN/RU)
+
+;; 1) TAB: prefer cdlatex expansion
+(defun my/latex-tab ()
+  "TAB in LaTeX: prefer cdlatex expansion, else indent."
+  (interactive)
+  (if (and (bound-and-true-p cdlatex-mode)
+           (fboundp 'cdlatex-tab))
+      (cdlatex-tab)
+    (indent-for-tab-command)))
+
+(add-hook 'LaTeX-mode-hook
+          (lambda ()
+            (local-set-key (kbd "TAB")   #'my/latex-tab)
+            (local-set-key (kbd "<tab>") #'my/latex-tab)))
+;; Optional: prevent Corfu popup from stealing TAB
+(with-eval-after-load 'corfu
+  (define-key corfu-map (kbd "TAB") nil)
+  (define-key corfu-map (kbd "<tab>") nil))
+
+;; 2) Spell: EN+RU (auto)
+;; Requires hunspell dictionaries OR aspell with ru/en.
+
+;; Hunspell + EN/RU (один процесс, multi-dict)
+(with-eval-after-load 'ispell
+  (setq ispell-program-name "hunspell"
+        ispell-really-hunspell t
+        ;; ключевой момент: Emacs должен видеть multi-dict как "словарь"
+        ispell-dictionary "en_US,ru_RU"
+        ;; hunspell pipe mode + utf-8
+        ispell-extra-args '("-a" "-i" "utf-8"))
+
+  ;; ВАЖНО по документации/практике: сначала параметры, потом multi-dict
+  (ispell-set-spellchecker-params)
+  (ispell-hunspell-add-multi-dic "en_US,ru_RU"))
+
+(defun my/latex-spell-setup ()
+  "Flyspell in LaTeX with Hunspell EN/RU."
+  (when (executable-find "hunspell")
+    (flyspell-mode 1)))
+
+(use-package company-spell
+  :ensure t
+  :config
+  ;; use hunspell
+  (setq company-spell-command "hunspell"
+        company-spell-args "-a -i utf-8 -d en_US,ru_RU"))
+
+(defun my/cape-spell-capf ()
+  "CAPF for spell suggestions via hunspell (company-spell) in text, not math."
+  (when (and (derived-mode-p 'latex-mode)
+             (fboundp 'texmathp)
+             (not (texmathp)))
+    (funcall (cape-company-to-capf #'company-spell))))
+
+;; 3) Completion stack for LaTeX
+(defun my/latex-setup ()
+  "My LaTeX setup (completion + pairs + spell)."
+  ;; CAPF: AUCTeX first, then cape, then dabbrev
+  (setq-local completion-at-point-functions
+              (list
+               #'TeX--completion-at-point  ; AUCTeX (works in LaTeX-mode)
+               #'cape-tex
+	       #'my/cape-spell-capf
+               #'cape-dabbrev))
+
+  ;; Nice editing
+  (electric-pair-local-mode 1)
+
+  ;; Spell EN/RU
+  (my/latex-spell-setup))
+
+(add-hook 'LaTeX-mode-hook #'my/latex-setup)
+
+;;;; ------------------------------------------------------------------------
 
 ;; --- Optional: cdlatex plays fine with the above ------------------------------
 (use-package cdlatex
   :hook (LaTeX-mode . cdlatex-mode)
   :config
   (setq cdlatex-use-dollar-to-ensure-math t)
-  (with-eval-after-load 'cdlatex
-    (add-to-list 'cdlatex-math-modify-alist
-		 '(?B "\\mathbb" nil t nil nil))))
+  (add-to-list 'cdlatex-math-modify-alist
+	       '(?B "\\mathbb" nil t nil nil))
+  (add-to-list 'cdlatex-math-modify-alist
+	       '(?- "\\overline" nil t nil nil))
+  (add-to-list 'cdlatex-command-alist
+   	       '("mk" "Insert $...$" "$?$" cdlatex-position-cursor nil t nil) t)
+  (add-to-list 'cdlatex-command-alist
+	       '("dm" "Insert \\[...\\]" "\\[\n?\n\\]" cdlatex-position-cursor nil t nil) t)
+  (add-to-list 'cdlatex-command-alist
+	       '("pb" "Insert \\Pb(...)" "\\Pb(?)" cdlatex-position-cursor nil nil t) t)
+
+  (add-to-list 'cdlatex-math-symbol-alist
+	       '(?& ("\\cap" "\\wedge")))
+
+  (defun my/cdlatex-add-env (abbr env &optional autolabel optarg)
+    "Register a CDLaTeX environment ENV and an abbreviation ABBR.
+
+- Adds ENV template to `cdlatex-env-alist` (for `cdlatex-environment` / C-c {).
+- Adds ABBR to `cdlatex-command-alist` so ABBR<TAB> inserts ENV.
+
+AUTOLABEL: if non-nil, insert \"AUTOLABEL\" line (RefTeX label hook).
+OPTARG:    if non-nil, add optional argument placeholder like [ ? ]."
+    (let ((template (concat "\\begin{" env "}"
+                            (when optarg "[?]")
+                            "\n"
+                            (when autolabel "AUTOLABEL\n")
+			    (if optarg "\n" "?\n")
+                            "\\end{" env "}\n")))
+      ;; 1) environment template (keyed by ENV)
+      (add-to-list 'cdlatex-env-alist (list env template nil) t)
+
+      ;; 2) abbreviation (keyed by ABBR)
+      ;; cdlatex-command-alist entry format per README:
+      ;; (ABBR "Desc" "" cdlatex-environment (ENV) t nil)
+      (add-to-list 'cdlatex-command-alist
+                   (list abbr
+			 (format "Insert %s env" env)
+			 ""
+			 #'cdlatex-environment
+			 (list env)
+			 t
+			 nil)
+                   t)))
+  ;; Теоремные окружения
+  (my/cdlatex-add-env "thm"  "theorem" nil t)
+  (my/cdlatex-add-env "lem"  "lemma" nil t)
+  (my/cdlatex-add-env "cor"  "corollary")
+  (my/cdlatex-add-env "def"  "definition" nil t)
+  (my/cdlatex-add-env "ex"   "example")
+  (my/cdlatex-add-env "rem"  "remark" nil t)
+
+  ;; Proof (без аргументов)
+  (my/cdlatex-add-env "prf"   "proof")
+
+  ;; Математические
+  (my/cdlatex-add-env "al"   "align")
+  (my/cdlatex-add-env "ga"   "gather")
+
+  ;; Если ты сделал tcolorbox окружения: idea / pitfall / intuition / proofsketch
+  (my/cdlatex-add-env "idea" "idea")
+  (my/cdlatex-add-env "pit"  "pitfall")
+  (my/cdlatex-add-env "int"  "intuition")
+  (my/cdlatex-add-env "ps"   "proofsketch")
+
+  (with-eval-after-load 'evil
+    (add-hook 'LaTeX-mode-hook
+              (lambda ()
+		(evil-local-set-key 'insert (kbd "TAB")   #'my/latex-tab)
+		(evil-local-set-key 'insert (kbd "<tab>") #'my/latex-tab))))
+  )
 
 ;; --- Optional: nice one-key “compile all” and “view” --------------------------
 (with-eval-after-load 'tex
@@ -160,23 +304,7 @@
   :hook (LaTeX-mode . turn-on-reftex)
   :config (setq reftex-plug-into-AUCTeX t))
 
-;; Corfu + CAPE sources tuned for LaTeX (AUCTeX already provides capf)
-(defun my/latex-setup ()
-  "My fast LaTeX setup."
-  ;; Make completion good in LaTeX buffers
-  (setq-local completion-at-point-functions
-              (list
-               (cape-capf-super
-                #'tex--prettify-symbols-compose-region
-                #'TeX-completion-at-point
-                #'cape-tex
-                #'cape-dabbrev)))
-  ;; Automatically insert pairs like \left( \right)
-  (electric-pair-local-mode 1)
-  ;; Spellcheck in text, but keep it light
-  (when (executable-find "aspell")
-    (ispell-change-dictionary "en_US" t)
-    (flyspell-mode 1)))
+
 
 ;; Convenience: compile & view keys
 (with-eval-after-load 'tex
@@ -191,6 +319,12 @@
         evil-undo-system 'undo-redo)      ; Emacs 28+ native undo/redo
   :config
   (evil-mode 1))
+
+(use-package evil-numbers
+  :after evil
+  :bind (:map evil-normal-state-map
+              ("C-a" . evil-numbers/inc-at-pt)
+              ("C-d" . evil-numbers/dec-at-pt)))
 
 (use-package evil-collection
   :after evil
@@ -234,7 +368,7 @@
   (obsidian-backlinks-mode t)
   :custom
   ;; location of obsidian vault
-  (obsidian-directory "~/Documents/Obsidian/conspects/MainVault/MainVault/")
+  (obsidian-directory "~/Documents/Obsidian/MainVault/MainVault/")
   ;; Default location for new notes from `obsidian-capture'
   (obsidian-inbox-directory "Inbox")
   ;; Useful if you're going to be using wiki links
@@ -252,6 +386,10 @@
               ("C-c C-p" . obsidian-jump)
               ;; Follow a backlink for the current file
               ("C-c C-b" . obsidian-backlink-jump)))
+
+(use-package just-mode)
+
+
 
   
 
