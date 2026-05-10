@@ -58,5 +58,11 @@ export SDKMAN_DIR="$HOME/.sdkman"
 
 
 FPATH="$HOME/.docker/completions:$FPATH"
+
+fpath+=~/.zfunc
+
 autoload -Uz compinit
 compinit
+
+
+export PATH="/opt/homebrew/opt/rustup/bin:$PATH"
