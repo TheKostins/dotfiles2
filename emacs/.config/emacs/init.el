@@ -13,13 +13,15 @@
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
 
+(setq my/font  "Pixel Code")
+
  ;; Font setup: JetBrains Mono
  (set-face-attribute 'default nil
-                     :font "JetBrainsMono Nerd Font Mono"
+                     :font my/font
                     :height 150    ;; 100 = 10pt; tweak to your taste
                     :weight 'regular)
-(set-face-attribute 'fixed-pitch nil :font "JetBrainsMono Nerd Font Mono" :height 150)
-(set-face-attribute 'variable-pitch nil :font "JetBrainsMono Nerd Font Mono" :height 150)
+(set-face-attribute 'fixed-pitch nil :font my/font :height 150)
+(set-face-attribute 'variable-pitch nil :font my/font :height 150)
 
 (add-hook 'prog-mode-hook
           (lambda ()
