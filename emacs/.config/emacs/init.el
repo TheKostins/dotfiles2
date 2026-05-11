@@ -1,17 +1,6 @@
-(setq gc-cons-threshold (* 128 1024 1024)
-      read-process-output-max (* 3 1024 1024)
-      inhibit-startup-screen t
-      initial-scratch-message nil
-      native-comp-async-report-warnings-errors nil
-      bidi-display-reordering nil
-      bidi-paragraph-direction 'left-to-right)
-
+;;; init.el --- Konstantin's Emacs config -*- lexical-binding: t; -*-
 (setq debug-on-error t)
 (setq frame-resize-pixelwise t)
-
-(delete-selection-mode 1)
-(tool-bar-mode 0)
-(scroll-bar-mode 0)
 
 (setq my/font  "Pixel Code")
 
@@ -49,7 +38,8 @@
   :config
   ;; Put autosaves, backups, etc. in ~/.emacs.d/var and ~/.emacs.d/etc
   (no-littering-theme-backups)
-  (setq custom-file (no-littering-expand-etc-file-name "custom.el")))
+  (setq custom-file (no-littering-expand-etc-file-name "custom.el"))
+  (load custom-file 'noerror 'nomessage))
 
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
@@ -391,26 +381,3 @@ OPTARG:    if non-nil, add optional argument placeholder like [ ? ]."
 
 (use-package just-mode)
 
-
-
-  
-
-;; Keep GC sane after startup
-(add-hook 'emacs-startup-hook (lambda () (setq gc-cons-threshold (* 32 1024 1024))))
-;;;; -------------------------------------------------------------------------
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(auctex cape cdlatex consult corfu gruvbox-theme marginalia
-	    no-littering orderless vertico yasnippet
-	    yasnippet-snippets)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
