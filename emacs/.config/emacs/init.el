@@ -4,7 +4,7 @@
 
 (setq my/font  "Pixel Code")
 
- ;; Font setup: JetBrains Mono
+;; Font seup
  (set-face-attribute 'default nil
                      :font my/font
                     :height 150    ;; 100 = 10pt; tweak to your taste
@@ -65,13 +65,15 @@
   :init (setq completion-styles '(orderless basic)
               completion-category-defaults nil
               completion-category-overrides '((file (styles basic partial-completion)))))
+
 (use-package marginalia :init (marginalia-mode 1))
+
 (use-package consult
   :bind (:map global-map
 	      ("C-x b" . consult-buffer)
 	      ("C-x C-b" . consult-buffer)
-	      ("C-s C-l" . consult-line)
-	      ("C-s C-g" . consult-ripgrep))
+	      ("C-c C-l" . consult-line)
+	      ("C-c C-g" . consult-ripgrep))
   :init
   (dolist (key '("C-s" "C-x b"))
     (unbind-key (kbd key)))) 
