@@ -1,6 +1,7 @@
 ;;; my-latex.el --- PDF and LaTeX setup -*- lexical-binding: t; -*-
 
 (require 'use-package)
+(require 'cape)
 
 (use-package pdf-tools
   :config
@@ -100,11 +101,15 @@
   "My LaTeX setup (completion + pairs + spell)."
   ;; CAPF: AUCTeX first, then cape, then dabbrev
   (setq-local completion-at-point-functions
-              (list
-               #'TeX--completion-at-point
-               #'cape-tex
-               #'my/cape-spell-capf
-               #'cape-dabbrev))
+              (delq nil
+                    (list
+                     (when (fboundp 'TeX--completion-at-point)
+                       #'TeX--completion-at-point)
+                     (when (fboundp 'cape-tex)
+                       #'cape-tex)
+                     #'my/cape-spell-capf
+                     (when (fboundp 'cape-dabbrev)
+                       #'cape-dabbrev))))
 
   ;; Nice editing
   (electric-pair-local-mode 1)
