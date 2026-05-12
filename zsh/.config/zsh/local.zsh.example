@@ -1,0 +1,10 @@
+# Copy this file to local.zsh for machine-specific configuration.
+# local.zsh is ignored by git.
+
+# export PATH="$PATH:$HOME/.lmstudio/bin"
+
+# [[ -d /opt/homebrew/opt/rustup/bin ]] && export PATH="/opt/homebrew/opt/rustup/bin:$PATH"
+
+# Keep SDKMAN at the end of this file if enabled.
+# export SDKMAN_DIR="$HOME/.sdkman"
+# [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
