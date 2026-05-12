@@ -6,6 +6,7 @@
 (require 'my-packages)
 (require 'my-ui)
 (require 'my-completion)
+(require 'my-pdf)
 (require 'my-latex)
 (require 'my-evil)
 (require 'my-tools)

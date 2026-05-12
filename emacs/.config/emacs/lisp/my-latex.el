@@ -1,17 +1,7 @@
-;;; my-latex.el --- PDF and LaTeX setup -*- lexical-binding: t; -*-
+;;; my-latex.el --- LaTeX setup -*- lexical-binding: t; -*-
 
 (require 'use-package)
 (require 'cape)
-
-(use-package pdf-tools
-  :config
-  (pdf-tools-install)
-  (setq-default pdf-view-display-size 'fit-page)
-  ;; Enable midnight mode for a Gruvbox-like dark PDF background
-  (setq pdf-view-midnight-colors '("#ebdbb2" . "#282828"))
-  (add-hook 'pdf-view-mode-hook #'pdf-view-midnight-minor-mode)
-  ;; More natural scrolling
-  (add-hook 'pdf-view-mode-hook #'pdf-view-fit-width-to-window))
 
 ;; LaTeX powerhouse
 (use-package auctex
