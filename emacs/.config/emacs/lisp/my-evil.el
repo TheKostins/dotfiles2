@@ -1,0 +1,37 @@
+;;; my-evil.el --- Evil and modal editing setup -*- lexical-binding: t; -*-
+
+(require 'use-package)
+
+(use-package evil
+  :init
+  (setq evil-want-keybinding nil
+        evil-want-C-u-scroll t
+        evil-want-C-i-jump t
+        evil-undo-system 'undo-redo)
+  :config
+  (evil-mode 1))
+
+(use-package evil-numbers
+  :after evil
+  :bind (:map evil-normal-state-map
+              ("C-a" . evil-numbers/inc-at-pt)
+              ("C-d" . evil-numbers/dec-at-pt)))
+
+(use-package evil-collection
+  :after evil
+  :config
+  (evil-collection-init))
+
+(use-package god-mode
+  :after evil
+  :init
+  ;; Nice behavior in isearch/minibuffer
+  (add-hook 'minibuffer-setup-hook (lambda () (setq-local god-local-mode nil)))
+  :config
+  ;; One-shot God Mode on Space in Evil normal/visual states
+  (define-key evil-normal-state-map (kbd "SPC") #'god-execute-with-current-bindings)
+  (define-key evil-visual-state-map (kbd "SPC") #'god-execute-with-current-bindings))
+
+(provide 'my-evil)
+
+;;; my-evil.el ends here
