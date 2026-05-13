@@ -20,6 +20,11 @@
 
 (use-package magit)
 
+(use-package hl-todo
+  :hook (prog-mode . hl-todo-mode))
+
+(use-package wgrep)
+
 (use-package diff-hl
   :hook ((prog-mode text-mode dired-mode) . diff-hl-mode)
   :config
