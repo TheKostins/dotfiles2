@@ -22,6 +22,16 @@
   :config
   (evil-collection-init))
 
+(use-package evil-surround
+  :after evil
+  :config
+  (global-evil-surround-mode 1))
+
+(use-package evil-commentary
+  :after evil
+  :config
+  (evil-commentary-mode 1))
+
 (use-package evil-mc
   :after evil
   :commands (evil-mc-make-and-goto-next-match
