@@ -48,8 +48,7 @@
               ("C-c C-i" . consult-imenu)
               ("C-c C-g" . consult-ripgrep))
   :init
-  (dolist (key '("C-x b"))
-    (unbind-key (kbd key))))
+  (unbind-key (kbd "C-x b")))
 
 (use-package embark
   :bind (:map global-map
@@ -69,7 +68,7 @@
   :config
   (setq corfu-auto t
         corfu-auto-delay 0.05
-        corfu-auto-prefix 1
+        corfu-auto-prefix 2
         corfu-quit-no-match 'separator))
 
 (use-package cape
