@@ -6,6 +6,7 @@
 (require 'my-packages)
 (require 'my-ui)
 (require 'my-completion)
+(require 'my-python)
 (require 'my-pdf)
 (require 'my-latex)
 (require 'my-latex-cdlatex)
