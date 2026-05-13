@@ -14,8 +14,8 @@
 (use-package evil-numbers
   :after evil
   :bind (:map evil-normal-state-map
-              ("C-a" . evil-numbers/inc-at-pt)
-              ("C-d" . evil-numbers/dec-at-pt)))
+              ("g+" . evil-numbers/inc-at-pt)
+              ("g-" . evil-numbers/dec-at-pt)))
 
 (use-package evil-collection
   :after evil
