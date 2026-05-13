@@ -1,6 +1,5 @@
 ;;; my-core.el --- Core editor defaults -*- lexical-binding: t; -*-
 
-(setq debug-on-error t)
 (setq frame-resize-pixelwise t)
 (setq sentence-end-double-space nil)
 
@@ -9,6 +8,9 @@
 (recentf-mode 1)
 (global-auto-revert-mode 1)
 (winner-mode 1)
+(show-paren-mode 1)
+(electric-pair-mode 1)
+(global-hl-line-mode 1)
 
 (setq recentf-max-saved-items 200
       recentf-max-menu-items 25
