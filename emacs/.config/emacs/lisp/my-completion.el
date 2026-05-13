@@ -69,7 +69,9 @@
   (setq corfu-auto t
         corfu-auto-delay 0.05
         corfu-auto-prefix 2
-        corfu-quit-no-match 'separator))
+        corfu-quit-no-match 'separator)
+  (corfu-popupinfo-mode 1)
+  (setq corfu-popupinfo-delay '(0.5 . 0.2)))
 
 (use-package cape
   :after corfu
