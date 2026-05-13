@@ -2,10 +2,22 @@
 
 (require 'use-package)
 
+(use-package which-key
+  :ensure nil
+  :init
+  (which-key-mode 1)
+  :config
+  (setq which-key-idle-delay 0.4))
+
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package magit)
+
+(use-package diff-hl
+  :hook ((prog-mode text-mode dired-mode) . diff-hl-mode)
+  :config
+  (diff-hl-flydiff-mode 1))
 
 (use-package diredfl
   :config

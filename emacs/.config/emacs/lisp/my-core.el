@@ -2,6 +2,18 @@
 
 (setq debug-on-error t)
 (setq frame-resize-pixelwise t)
+(setq sentence-end-double-space nil)
+
+(delete-selection-mode 1)
+(save-place-mode 1)
+(recentf-mode 1)
+(global-auto-revert-mode 1)
+(winner-mode 1)
+
+(setq recentf-max-saved-items 200
+      recentf-max-menu-items 25
+      global-auto-revert-non-file-buffers t
+      auto-revert-verbose nil)
 
 (defvar my/font "Pixel Code")
 

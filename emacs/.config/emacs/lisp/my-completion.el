@@ -31,15 +31,37 @@
   :init
   (marginalia-mode 1))
 
+(use-package project
+  :ensure nil
+  :bind (:map global-map
+              ("C-c p p" . project-switch-project)
+              ("C-c p b" . consult-project-buffer)
+              ("C-c p f" . consult-find)
+              ("C-c p g" . consult-ripgrep)))
+
 (use-package consult
   :bind (:map global-map
               ("C-x b" . consult-buffer)
               ("C-x C-b" . consult-buffer)
               ("C-c C-l" . consult-line)
+              ("C-c C-y" . consult-yank-pop)
+              ("C-c C-i" . consult-imenu)
               ("C-c C-g" . consult-ripgrep))
   :init
   (dolist (key '("C-x b"))
     (unbind-key (kbd key))))
+
+(use-package embark
+  :bind (:map global-map
+              ("C-'" . embark-act)
+              ("C-;" . embark-dwim)
+              ("C-h B" . embark-bindings))
+  :init
+  (setq prefix-help-command #'embark-prefix-help-command))
+
+(use-package embark-consult
+  :after (embark consult)
+  :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package corfu
   :init

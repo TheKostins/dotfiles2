@@ -46,10 +46,11 @@
             (local-set-key (kbd "TAB") #'my/latex-tab)
             (local-set-key (kbd "<tab>") #'my/latex-tab)))
 
-;; Optional: prevent Corfu popup from stealing TAB
+;; When the Corfu popup is active, TAB should complete the selected
+;; candidate.  Otherwise the LaTeX local binding below gives TAB to CDLaTeX.
 (with-eval-after-load 'corfu
-  (define-key corfu-map (kbd "TAB") nil)
-  (define-key corfu-map (kbd "<tab>") nil))
+  (define-key corfu-map (kbd "TAB") #'corfu-complete)
+  (define-key corfu-map (kbd "<tab>") #'corfu-complete))
 
 ;; 2) Spell: EN+RU (auto)
 ;; Requires hunspell dictionaries OR aspell with ru/en.
