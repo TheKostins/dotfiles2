@@ -10,6 +10,7 @@
   :config
   ;; Put autosaves, backups, etc. in ~/.emacs.d/var and ~/.emacs.d/etc
   (no-littering-theme-backups)
+  (setq create-lockfiles nil)
   (setq custom-file (no-littering-expand-etc-file-name "custom.el"))
   (load custom-file 'noerror 'nomessage))
 

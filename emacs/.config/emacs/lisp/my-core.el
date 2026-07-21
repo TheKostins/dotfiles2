@@ -17,7 +17,7 @@
       global-auto-revert-non-file-buffers t
       auto-revert-verbose nil)
 
-(defvar my/font "Pixel Code")
+(defvar my/font "IBM Plex Mono")
 
 (defun my/font-available-p (font)
   "Return non-nil when FONT is available."
@@ -33,7 +33,7 @@
                           :height 150
                           :weight 'regular)
       (set-face-attribute 'fixed-pitch nil :font my/font :height 150)
-      (set-face-attribute 'variable-pitch nil :font my/font :height 150))))
+      (set-face-attribute 'variable-pitch nil :font "IBM Plex Sans" :height 150))))
 
 (my/apply-font)
 (add-hook 'after-make-frame-functions #'my/apply-font)

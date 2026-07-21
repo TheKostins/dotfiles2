@@ -12,5 +12,6 @@
 (require 'my-latex-cdlatex)
 (require 'my-evil)
 (require 'my-tools)
+(require 'my-odin)
 
 ;;; init.el ends here

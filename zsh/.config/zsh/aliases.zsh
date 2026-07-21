@@ -27,3 +27,5 @@ alias tmux='tmux new-session -A -s "$(basename "$PWD")"'
 
 alias tmx='tmux new-session -As main -c "$PWD"'
 zmx() { tmux new-session -As "${2:-$(basename "$(zoxide query "$1")")}" -c "$(zoxide query "$1")"; }
+
+alias claude-maxxing="CLAUDE_CONFIG_DIR=~/.claude-maxxxing command claude"
