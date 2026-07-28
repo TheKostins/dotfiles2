@@ -34,6 +34,19 @@
   :config
   (diredfl-global-mode))
 
+;; File tree sidebar, built on Dired so it inherits diredfl's highlighting.
+;; `ascii' theme avoids pulling in an icon-font dependency (all-the-icons /
+;; nerd-icons).
+(use-package dired-sidebar
+  :bind ("C-x C-n" . dired-sidebar-toggle-sidebar)
+  :init
+  (add-hook 'dired-sidebar-mode-hook
+            (lambda ()
+              (unless (file-remote-p default-directory)
+                (auto-revert-mode))))
+  :config
+  (setq dired-sidebar-theme 'ascii))
+
 (use-package markdown-mode)
 
 (use-package obsidian

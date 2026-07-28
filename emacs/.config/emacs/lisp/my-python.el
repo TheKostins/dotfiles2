@@ -26,9 +26,7 @@
 (use-package eglot
   :ensure nil
   :hook ((python-mode    . eglot-ensure)
-         (python-ts-mode . eglot-ensure))
-  :config
-  (setq eglot-autoshutdown t))
+         (python-ts-mode . eglot-ensure)))
 
 ;; Jupyter notebook client
 (use-package ein

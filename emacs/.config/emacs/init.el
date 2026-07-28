@@ -6,6 +6,7 @@
 (require 'my-packages)
 (require 'my-ui)
 (require 'my-completion)
+(require 'my-eglot)
 (require 'my-python)
 (require 'my-pdf)
 (require 'my-latex)
@@ -14,5 +15,6 @@
 (require 'my-tools)
 (require 'my-odin)
 (require 'my-cpp)
+(require 'my-rust)
 
 ;;; init.el ends here

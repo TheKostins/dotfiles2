@@ -17,6 +17,15 @@
   ;; Tidy shadowed file names
   :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
 
+;; Show the minibuffer completion UI (M-x, find-file, etc.) in a centered
+;; posframe instead of anchored at the bottom of the frame. Falls back to
+;; the normal minibuffer automatically in terminal Emacs, where posframe
+;; (child frames) aren't supported.
+(use-package vertico-posframe
+  :after vertico
+  :init
+  (vertico-posframe-mode 1))
+
 (use-package savehist
   :init
   (savehist-mode 1))
