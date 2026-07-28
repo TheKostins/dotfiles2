@@ -13,5 +13,6 @@
 (require 'my-evil)
 (require 'my-tools)
 (require 'my-odin)
+(require 'my-cpp)
 
 ;;; init.el ends here
