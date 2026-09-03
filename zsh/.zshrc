@@ -7,3 +7,8 @@ done
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh" || true
 
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/kost/.lmstudio/bin"
+# End of LM Studio CLI section
+

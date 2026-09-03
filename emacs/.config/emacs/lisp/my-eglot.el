@@ -15,12 +15,20 @@
               ("C-c C-r" . eglot-rename)))
 
 ;; Eldoc (hover docs, signature help) in a childframe at point, shown only
-;; on demand. Rebinds evil-collection's eglot "K" (normally
-;; `eldoc-doc-buffer') to the childframe version instead of popping it up
-;; automatically on every cursor move.
+;; on demand -- never automatically in the echo area. `eldoc-display-in-buffer'
+;; is left in `eldoc-display-functions' so eldoc's fetch cycle keeps the doc
+;; buffer fresh in the background (with `interactive' nil it only updates
+;; the buffer, it doesn't pop a window); only `eldoc-display-in-echo-area'
+;; is dropped so nothing shows until requested. Rebinds evil-collection's
+;; eglot "K" (normally `eldoc-doc-buffer') to the childframe version.
 (use-package eldoc-box
   :commands eldoc-box-help-at-point
   :init
+  (add-hook 'eglot-managed-mode-hook
+            (lambda ()
+              (setq-local eldoc-display-functions
+                          (remove #'eldoc-display-in-echo-area
+                                  eldoc-display-functions))))
   (with-eval-after-load 'evil-collection
     (add-hook 'eglot-managed-mode-hook
               (lambda ()

@@ -3,6 +3,13 @@
 (setq frame-resize-pixelwise t)
 (setq sentence-end-double-space nil)
 
+;; Emacs defaults tree-sitter modes to decoration level 3, which leaves out
+;; an entire tier of fontification: brackets, delimiters, operators, all
+;; function calls, properties (struct field access), and variable uses.
+;; Level 4 turns all of that on, matching the "everything is colored"
+;; look of nvim-treesitter-based colorschemes.
+(setq treesit-font-lock-level 4)
+
 (delete-selection-mode 1)
 (save-place-mode 1)
 (recentf-mode 1)
@@ -17,7 +24,7 @@
       global-auto-revert-non-file-buffers t
       auto-revert-verbose nil)
 
-(defvar my/font "IBM Plex Mono")
+(defvar my/font "JetBrainsMono Nerd Font Mono")
 
 (defun my/font-available-p (font)
   "Return non-nil when FONT is available."
