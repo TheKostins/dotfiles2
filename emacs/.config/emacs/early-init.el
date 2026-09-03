@@ -17,6 +17,8 @@
 ;; Frame / UI — set before the first frame is drawn.
 (push '(tool-bar-lines . 0)   default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
+(push '(width . 160)  default-frame-alist)
+(push '(height . 40)  default-frame-alist)
 (setq frame-resize-pixelwise t
       inhibit-startup-screen t
       initial-scratch-message nil
