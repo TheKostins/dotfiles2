@@ -27,6 +27,40 @@
   :config
   (global-evil-surround-mode 1))
 
+;; Tree-sitter powered text objects/motions, equivalent to
+;; nvim-treesitter-textobjects. Works against the built-in `treesit' parsers
+;; already installed for rust-ts-mode, c-ts-mode, c++-ts-mode, python-ts-mode,
+;; and odin-ts-mode -- no extra grammar setup needed.
+(use-package evil-textobj-tree-sitter
+  :after evil
+  :config
+  ;; `evil-textobj-tree-sitter-get-textobj' is a macro that requires a
+  ;; literal group string (it inspects `GROUP' at macro-expansion time), so
+  ;; these calls can't be generated in a loop.
+  (define-key evil-outer-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj "function.outer"))
+  (define-key evil-inner-text-objects-map "f" (evil-textobj-tree-sitter-get-textobj "function.inner"))
+  (define-key evil-outer-text-objects-map "c" (evil-textobj-tree-sitter-get-textobj "class.outer"))
+  (define-key evil-inner-text-objects-map "c" (evil-textobj-tree-sitter-get-textobj "class.inner"))
+  (define-key evil-outer-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj "parameter.outer"))
+  (define-key evil-inner-text-objects-map "a" (evil-textobj-tree-sitter-get-textobj "parameter.inner"))
+  (define-key evil-outer-text-objects-map "l" (evil-textobj-tree-sitter-get-textobj "loop.outer"))
+  (define-key evil-inner-text-objects-map "l" (evil-textobj-tree-sitter-get-textobj "loop.inner"))
+  (define-key evil-outer-text-objects-map "i" (evil-textobj-tree-sitter-get-textobj "conditional.outer"))
+  (define-key evil-inner-text-objects-map "i" (evil-textobj-tree-sitter-get-textobj "conditional.inner"))
+  (define-key evil-outer-text-objects-map "C" (evil-textobj-tree-sitter-get-textobj "comment.outer"))
+  (define-key evil-inner-text-objects-map "C" (evil-textobj-tree-sitter-get-textobj "comment.inner"))
+  ;; `]]'/`[[' are left alone (Evil's own section motion); `c' keeps the
+  ;; mnemonic used above for class instead of nvim-treesitter-textobjects'
+  ;; default `]]'/`[['.
+  (define-key evil-normal-state-map (kbd "]f")
+              (lambda () (interactive) (evil-textobj-tree-sitter-goto-textobj "function.outer")))
+  (define-key evil-normal-state-map (kbd "[f")
+              (lambda () (interactive) (evil-textobj-tree-sitter-goto-textobj "function.outer" t)))
+  (define-key evil-normal-state-map (kbd "]c")
+              (lambda () (interactive) (evil-textobj-tree-sitter-goto-textobj "class.outer")))
+  (define-key evil-normal-state-map (kbd "[c")
+              (lambda () (interactive) (evil-textobj-tree-sitter-goto-textobj "class.outer" t))))
+
 (use-package evil-commentary
   :after evil
   :config
