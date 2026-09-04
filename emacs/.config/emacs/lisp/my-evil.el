@@ -5,7 +5,6 @@
 (use-package evil
   :init
   (setq evil-want-keybinding nil
-        evil-want-C-u-scroll t
         evil-want-C-i-jump t
         evil-undo-system 'undo-redo)
   :config

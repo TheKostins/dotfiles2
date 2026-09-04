@@ -76,4 +76,11 @@
 
 (provide 'my-tools)
 
+(use-package vterm
+    :bind ("C-x t" . vterm))
+
+(use-package vterm-toggle
+  :after vterm
+  :bind ("C-x C-t" . vterm-toggle))
+
 ;;; my-tools.el ends here
