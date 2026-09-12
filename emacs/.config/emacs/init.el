@@ -12,6 +12,7 @@
 (require 'my-latex)
 (require 'my-latex-cdlatex)
 (require 'my-evil)
+(require 'my-input)
 (require 'my-tools)
 (require 'my-odin)
 (require 'my-cpp)
