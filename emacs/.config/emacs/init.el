@@ -17,5 +17,6 @@
 (require 'my-odin)
 (require 'my-cpp)
 (require 'my-rust)
+(require 'my-org)
 
 ;;; init.el ends here

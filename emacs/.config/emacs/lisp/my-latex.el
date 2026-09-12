@@ -34,10 +34,12 @@
 
 ;; 1) TAB: prefer cdlatex expansion
 (defun my/latex-tab ()
-  "TAB in LaTeX: prefer cdlatex expansion, else indent."
+  "TAB in LaTeX: indent at line start, otherwise hand over to CDLaTeX
+\(abbreviation expansion, then jumping to the next input spot)."
   (interactive)
   (if (and (bound-and-true-p cdlatex-mode)
-           (fboundp 'cdlatex-tab))
+           (fboundp 'cdlatex-tab)
+           (not (looking-back "^[ \t]*" (line-beginning-position))))
       (cdlatex-tab)
     (indent-for-tab-command)))
 
@@ -48,9 +50,49 @@
 
 ;; When the Corfu popup is active, TAB should complete the selected
 ;; candidate.  Otherwise the LaTeX local binding below gives TAB to CDLaTeX.
+(declare-function cdlatex-tab "cdlatex")
+(declare-function cdlatex--texmathp "cdlatex")
+
+(defun my/cdlatex-abbrev-p ()
+  "Non-nil when the word before point is a CDLaTeX abbreviation valid here.
+Mirrors the lookup `cdlatex-tab' itself performs (text vs. math flags
+included), so callers can decide whether TAB should go to CDLaTeX."
+  (when (and (or (bound-and-true-p cdlatex-mode)
+                 (bound-and-true-p org-cdlatex-mode))
+             (boundp 'cdlatex-command-alist-comb))
+    (save-excursion
+      (let ((pos (point)))
+        (backward-word 1)
+        (while (eq (following-char) ?$) (forward-char 1))
+        (let ((exp (assoc (buffer-substring-no-properties (point) pos)
+                          cdlatex-command-alist-comb)))
+          (and exp
+               (if (cdlatex--texmathp) (nth 6 exp) (nth 5 exp))
+               t))))))
+
+(defun my/cdlatex-active-p ()
+  "Non-nil when CDLaTeX is in charge of TAB in this buffer."
+  (or (bound-and-true-p cdlatex-mode)
+      (bound-and-true-p org-cdlatex-mode)))
+
+(defun my/corfu-tab ()
+  "TAB while the Corfu popup is open.
+In a CDLaTeX buffer TAB keeps its CDLaTeX meaning whenever that is what
+you are most likely after: an abbreviation before point (`suml'), point
+inside math, or point right before a closing delimiter (jump out of the
+brace).  It completes the candidate only for a `\\macro' being typed or
+plain prose.  Elsewhere it always completes."
+  (interactive)
+  (cond
+   ((not (my/cdlatex-active-p)) (corfu-complete))
+   ((my/cdlatex-abbrev-p) (corfu-quit) (cdlatex-tab))
+   ((looking-back "\\\\[A-Za-z@]*" (line-beginning-position)) (corfu-complete))
+   ((or (cdlatex--texmathp) (looking-at-p "[]})$]")) (corfu-quit) (cdlatex-tab))
+   (t (corfu-complete))))
+
 (with-eval-after-load 'corfu
-  (define-key corfu-map (kbd "TAB") #'corfu-complete)
-  (define-key corfu-map (kbd "<tab>") #'corfu-complete))
+  (define-key corfu-map (kbd "TAB") #'my/corfu-tab)
+  (define-key corfu-map (kbd "<tab>") #'my/corfu-tab))
 
 ;; 2) Spell: EN+RU (auto)
 ;; Requires hunspell dictionaries OR aspell with ru/en.
