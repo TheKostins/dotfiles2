@@ -48,10 +48,9 @@
 (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
 (set-face-attribute 'font-lock-keyword-face nil :weight 'bold)
 
-(add-hook 'prog-mode-hook
-          (lambda ()
-            (setq-local display-line-numbers 'relative)
-            (display-line-numbers-mode 1)))
+(setq display-line-numbers-type 'relative)
+
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
 
 (provide 'my-core)
 

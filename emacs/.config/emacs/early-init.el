@@ -24,5 +24,9 @@
       initial-scratch-message nil
       native-comp-async-report-warnings-errors nil)
 
+;; Load a module's .el when it's newer than its .elc. Without this, `require'
+;; silently prefers a stale .elc and edits to the source do nothing.
+(setq load-prefer-newer t)
+
 ;; We'll initialize package.el ourselves in init.el.
 (setq package-enable-at-startup nil)
