@@ -201,6 +201,26 @@
   :config
   (exec-path-from-shell-initialize))
 
+;; gpg-agent doubles as the ssh-agent here (enable-ssh-support in
+;; ~/.gnupg/gpg-agent.conf), but SSH_AUTH_SOCK is only exported from
+;; ~/.config/zsh/prompt.zsh, which a GUI Emacs never sources.  Without it,
+;; Magit pushes to SSH remotes die with "Permission denied (publickey)".
+;; Ask gpgconf for the socket rather than re-deriving it from the shell, so
+;; this holds regardless of how Emacs was started.
+(defun my/use-gpg-agent-for-ssh ()
+  "Point `SSH_AUTH_SOCK' at gpg-agent's ssh socket, launching the agent."
+  (when (executable-find "gpgconf")
+    (let ((sock (string-trim
+                 (shell-command-to-string
+                  "gpgconf --launch gpg-agent >/dev/null 2>&1; \
+gpgconf --list-dirs agent-ssh-socket"))))
+      (when (file-exists-p sock)
+        (setenv "SSH_AUTH_SOCK" sock)
+        ;; A stale SSH_AGENT_PID makes ssh prefer a dead agent over the socket.
+        (setenv "SSH_AGENT_PID" nil)))))
+
+(add-hook 'emacs-startup-hook #'my/use-gpg-agent-for-ssh)
+
 (provide 'my-ui)
 
 ;;; my-ui.el ends here
