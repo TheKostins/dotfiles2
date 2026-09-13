@@ -1,4 +1,4 @@
-export EZB="eza --icons=always"
+EZB="eza --icons=always"
 alias ls="$EZB"
 alias l="$EZB -l"
 alias ll="$EZB -la"
@@ -22,8 +22,6 @@ alias gpl='git pull --ff-only'
 alias gps='git push'
 alias gpsf='git push --force-with-lease'
 alias gph='git push -u origin HEAD'
-
-alias tmux='tmux new-session -A -s "$(basename "$PWD")"'
 
 alias tmx='tmux new-session -As main -c "$PWD"'
 zmx() { tmux new-session -As "${2:-$(basename "$(zoxide query "$1")")}" -c "$(zoxide query "$1")"; }

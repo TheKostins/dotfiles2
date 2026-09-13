@@ -1,10 +1,15 @@
-# Copy this file to local.zsh for machine-specific configuration.
-# local.zsh is ignored by git.
+# Copy to local.zsh for machine-local config.
+#
+# local.zsh is also the target of the ~/.zshrc symlink, so installers that
+# append to ~/.zshrc land at the bottom of it rather than in the tracked
+# config.  Keep the source line below first; without it no config loads.
+#
+# On a fresh machine, after `stow zsh`:
+#   cp ~/.config/zsh/local.zsh.example ~/.config/zsh/local.zsh
+#   cp ~/.config/zsh/local-profile.zsh.example ~/.config/zsh/local-profile.zsh
+#   ln -sfn .config/zsh/local.zsh ~/.zshrc
+#   ln -sfn .config/zsh/local-profile.zsh ~/.zprofile
 
-# export PATH="$PATH:$HOME/.lmstudio/bin"
+source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/rc.zsh"
 
-# [[ -d /opt/homebrew/opt/rustup/bin ]] && export PATH="/opt/homebrew/opt/rustup/bin:$PATH"
-
-# Keep SDKMAN at the end of this file if enabled.
-# export SDKMAN_DIR="$HOME/.sdkman"
-# [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+# Machine-local settings go below.

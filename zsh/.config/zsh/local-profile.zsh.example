@@ -1,0 +1,6 @@
+# Copy to local-profile.zsh for machine-local login-shell config.
+# Target of the ~/.zprofile symlink; see local.zsh.example for the bootstrap.
+
+source "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/profile.zsh"
+
+# Machine-local settings go below.
