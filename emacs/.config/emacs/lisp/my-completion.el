@@ -30,11 +30,25 @@
   :init
   (savehist-mode 1))
 
+(declare-function my/russian-stem-regexp "my-russian-stem")
+
+(defun my/orderless-russian-dispatch (component _index _total)
+  "Match a Cyrillic COMPONENT by its stem, so any inflected form matches.
+`теоремы' finds \"Теорема Байеса\"; ё and е are interchangeable.  Prefix
+with `=' for the literal form (see `orderless-affix-dispatch', which runs
+first).  Components with Latin letters or punctuation are left alone."
+  (when (string-match-p "\\`[а-яёА-ЯЁ]+\\'" component)
+    (when-let* ((re (my/russian-stem-regexp component)))
+      (cons 'orderless-regexp re))))
+
 (use-package orderless
   :init
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
-        completion-category-overrides '((file (styles basic partial-completion)))))
+        completion-category-overrides '((file (styles basic partial-completion))))
+  :config
+  (require 'my-russian-stem)
+  (add-to-list 'orderless-style-dispatchers #'my/orderless-russian-dispatch t))
 
 (use-package marginalia
   :init
