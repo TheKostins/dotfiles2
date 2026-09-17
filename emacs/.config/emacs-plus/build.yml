@@ -1,3 +1,11 @@
 # Example build.yml
 icon: dragon-plus
 inject_path: true
+
+# Liquid Glass (NSGlassEffectView) frames — see lisp/my-glass.el in the Emacs
+# config. Patch from https://github.com/larrasket/emacs-liquid-glass
+patches:
+  - frame-transparency
+  - ns-glass-effect:
+      url: ~/.config/emacs-plus/ns-glass-effect.patch
+      sha256: 532eb0b8549a8591dd91376ad6f8071fe2d1136f61b19d1a2f44556ac6bebb91

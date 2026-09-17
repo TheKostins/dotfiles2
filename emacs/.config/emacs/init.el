@@ -5,6 +5,7 @@
 (require 'my-core)
 (require 'my-packages)
 (require 'my-ui)
+(require 'my-glass)
 (require 'my-completion)
 (require 'my-eglot)
 (require 'my-python)
