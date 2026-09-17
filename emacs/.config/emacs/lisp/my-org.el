@@ -36,6 +36,43 @@
 
 ;;;; org ---------------------------------------------------------------------
 
+(defvar my/notes-latex-macros
+  (mapconcat
+   #'identity
+   '(;; \\C is a T2A text accent and hyperref claims a few letters too, so
+     ;; define through an override instead of \\newcommand.
+     "\\newcommand{\\notedef}[1]{\\providecommand{#1}{}\\renewcommand{#1}}"
+     ;; common/math.tex
+     "\\notedef{\\R}{\\mathbb{R}}"
+     "\\notedef{\\N}{\\mathbb{N}}"
+     "\\notedef{\\Z}{\\mathbb{Z}}"
+     "\\notedef{\\C}{\\mathbb{C}}"
+     "\\notedef{\\ind}{\\mathds{1}}"
+     "\\notedef{\\eps}{\\varepsilon}"
+     "\\notedef{\\dd}{\\,\\mathrm{d}}"
+     "\\notedef{\\abs}[1]{\\left|#1\\right|}"
+     "\\notedef{\\norm}[1]{\\left\\lVert#1\\right\\rVert}"
+     ;; common/probability.tex
+     "\\notedef{\\Pb}{\\mathbb{P}}"
+     "\\notedef{\\Prob}{\\Pb}"
+     "\\notedef{\\E}{\\mathbb{E}}"
+     "\\notedef{\\F}{\\mathcal{F}}"
+     "\\notedef{\\D}{\\mathbb{D}}"
+     "\\notedef{\\given}{\\,\\middle|\\,}"
+     "\\DeclareMathOperator{\\Var}{Var}"
+     "\\DeclareMathOperator{\\Cov}{Cov}"
+     "\\DeclareMathOperator{\\Corr}{Corr}"
+     "\\notedef{\\Pcond}[2]{\\Pb\\!\\left(#1 \\given #2\\right)}"
+     "\\notedef{\\Econd}[2]{\\E\\!\\left[#1 \\given #2\\right]}"
+     "\\notedef{\\dto}{\\xrightarrow{d}}"
+     "\\notedef{\\pto}{\\xrightarrow{p}}"
+     "\\notedef{\\asto}{\\xrightarrow{a.s.}}")
+   "\n")
+  "Short LaTeX macros available in every note.
+Mirrors common/math.tex and common/probability.tex of the handbook.
+Goes into `org-latex-packages-alist' as a raw string, so LaTeX previews
+and PDF export share it.  Anki's MathJax does not see it.")
+
 (defun my/org-prettify ()
   "Show TeX symbols as glyphs outside previews, as in LaTeX buffers."
   (require 'tex-mode)
@@ -102,9 +139,19 @@ expands the first word of a line."
                       '("T1,T2A" "fontenc" t ("pdflatex"))
                     pkg))
                 org-latex-default-packages-alist))
+  ;; amsmath/amssymb are Org defaults.  The rest mirrors the handbook's
+  ;; common/math.tex; the trailing string carries the macros, so previews,
+  ;; PDF export and theme documents all see the same definitions.
   (setq org-latex-packages-alist
-        '(("russian,english" "babel" t)
-          ("" "amsthm" t))
+        `(("russian,english" "babel" t)
+          ("" "amsthm" t)
+          ("" "mathtools" t)
+          ("" "dsfont" t)
+          ("" "mathrsfs" t)
+          ("" "bm" t)
+          ("makeroom" "cancel" t)
+          ("" "centernot" t)
+          ,my/notes-latex-macros)
         org-latex-compiler "pdflatex"
         org-latex-pdf-process
         '("latexmk -pdf -f -interaction=nonstopmode -output-directory=%o %f"))
