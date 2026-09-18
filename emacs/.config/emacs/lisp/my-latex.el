@@ -110,6 +110,68 @@ plain prose.  Elsewhere it always completes."
   (ispell-set-spellchecker-params)
   (ispell-hunspell-add-multi-dic "en_US,ru_RU"))
 
+(defun my/spell--query (word)
+  "Send WORD to the running ispell process; return the parsed answer."
+  (setq ispell-filter nil)
+  (ispell-send-string (concat "^" word "\n"))
+  (while (progn (ispell-accept-output)
+                (not (string= "" (car ispell-filter)))))
+  (setq ispell-filter (cdr ispell-filter))
+  (prog1 (and (consp ispell-filter)
+              (ispell-parse-output (car ispell-filter)))
+    (setq ispell-filter nil)))
+
+(defvar my/spell--cache nil
+  "Last (WORD . SUGGESTIONS); Corfu asks several times per popup.")
+
+(defun my/spell-suggestions (word)
+  "Return hunspell's corrections for WORD, or nil when it is spelled right.
+Asks the ispell process Flyspell already keeps running, so there is no
+process spawn and the dictionaries are loaded once.
+
+With several dictionaries hunspell checks against all of them but only
+suggests from the one that last accepted a word.  A known-good word in
+WORD's script is sent first, so Russian typos get Russian corrections
+even right after an English word, and vice versa."
+  (if (equal word (car my/spell--cache))
+      (cdr my/spell--cache)
+    (require 'ispell)
+    (ispell-set-spellchecker-params)
+    (ispell-accept-buffer-local-defs)
+    ;; Corfu computes candidates under `while-no-input'; an interrupted
+    ;; round trip would leave a stale answer for the next query.
+    (let* ((throw-on-input nil)
+           (inhibit-quit t)
+           (poss (progn
+                   (ispell-send-string "%\n")
+                   (my/spell--query
+                    (if (string-match-p "[а-яёА-ЯЁ]" word) "слово" "the"))
+                   (my/spell--query word)))
+           (suggestions (and (consp poss) (nth 2 poss))))
+      (setq my/spell--cache (cons word suggestions))
+      suggestions)))
+
+(defun my/spell-capf ()
+  "CAPF offering spelling corrections for the word before point.
+Returns nil for short or correctly spelled words so later CAPFs still run.
+The table ignores the input string: corrections rarely share a prefix with
+the misspelling, and completion styles must not filter them away."
+  (when-let* ((bounds (bounds-of-thing-at-point 'word))
+              ((= (cdr bounds) (point)))
+              ((>= (- (cdr bounds) (car bounds)) 4))
+              (word (buffer-substring-no-properties (car bounds) (cdr bounds)))
+              (suggestions (ignore-errors (my/spell-suggestions word))))
+    (list (car bounds) (cdr bounds)
+          (lambda (_string _pred action)
+            (pcase action
+              ('metadata '(metadata (category . spelling)
+                                    (display-sort-function . identity)
+                                    (cycle-sort-function . identity)))
+              ('t suggestions)
+              (_ nil)))
+          :exclusive 'no
+          :annotation-function (lambda (_) " spell"))))
+
 (defun my/latex-spell-setup ()
   "Flyspell in LaTeX with Hunspell EN/RU."
   (when (executable-find "hunspell")

@@ -42,6 +42,8 @@
    '(;; \\C is a T2A text accent and hyperref claims a few letters too, so
      ;; define through an override instead of \\newcommand.
      "\\newcommand{\\notedef}[1]{\\providecommand{#1}{}\\renewcommand{#1}}"
+     ;;optax
+     "\\notedef{\\conv}{\\mathrm{conv}}"
      ;; common/math.tex
      "\\notedef{\\R}{\\mathbb{R}}"
      "\\notedef{\\N}{\\mathbb{N}}"
@@ -90,6 +92,24 @@ expands the first word of a line."
       (cdlatex-tab)
     (org-cycle)))
 
+(defun my/org-spell-capf ()
+  "Spelling corrections in prose only.
+Defers to `org-mode-flyspell-verify', so math, LaTeX environments, code
+blocks and verbatim text never trigger it."
+  ;; Ask from inside the word: at end of buffer, where most typing in a
+  ;; fresh note happens, the predicate is nil for point after the word.
+  (when (and (> (point) (point-min))
+             (save-excursion (backward-char) (org-mode-flyspell-verify)))
+    (my/spell-capf)))
+
+(defun my/org-spell-setup ()
+  "Flyspell (EN+RU hunspell, configured in `my-latex') plus corrections
+in the Corfu popup.  Evil already has the keys: `z=' corrects the word at
+point, `]s' / `[s' jump between misspellings."
+  (when (executable-find "hunspell")
+    (flyspell-mode 1)
+    (add-hook 'completion-at-point-functions #'my/org-spell-capf nil t)))
+
 (defun my/org-editing-setup ()
   "Per-buffer tweaks so CDLaTeX behaves as in LaTeX buffers."
   (face-remap-add-relative 'default :height my/notes-text-height)
@@ -107,7 +127,8 @@ expands the first word of a line."
   :hook ((org-mode . org-cdlatex-mode)
          (org-mode . visual-line-mode)
          (org-mode . my/org-prettify)
-         (org-mode . my/org-editing-setup))
+         (org-mode . my/org-editing-setup)
+         (org-mode . my/org-spell-setup))
   :config
   ;; LaTeX preview: dvisvgm renders SVGs that scale with the font and pick up
   ;; the theme foreground.  dvisvgm finds Ghostscript only through LIBGS.
@@ -354,6 +375,8 @@ and creates a note from unmatched input.")
 (declare-function org-toggle-tag "org")
 (declare-function evil-local-set-key "evil-core")
 (declare-function cdlatex-tab "cdlatex")
+(declare-function my/spell-capf "my-latex")
+(declare-function org-mode-flyspell-verify "org")
 (declare-function consult-org-roam-search "consult-org-roam")
 (declare-function anki-editor-insert-note "anki-editor")
 (declare-function anki-editor-insert-default-note "anki-editor")
