@@ -29,8 +29,9 @@
   "Where pasted images land.  Links are written relative to the note.")
 (defvar my/notes-review-tag "review"
   "Filetag marking notes that are on the periodic review schedule.")
-(defvar my/notes-workflow-tags '("review" "hub" "lecture" "image")
-  "Tags that describe workflow, not subject matter.  Never sent to Anki.")
+(defvar my/notes-workflow-tags '("review" "hub" "lecture" "image" "backfill")
+  "Tags that describe workflow, not subject matter.  Never sent to Anki.
+`backfill' marks a stub: a concept already linked to but not written yet.")
 (defvar my/anki-deck-root "Notes"
   "Anki parent deck; a note's first subject tag becomes the subdeck.")
 
@@ -333,6 +334,8 @@ and creates a note from unmatched input.")
              anki-editor-cloze-dwim)
   :config
   (setq anki-editor-latex-style 'mathjax
+        ;; "}}" inside math would close a cloze early: a_{i_{j}} → a_{i_{j} }.
+        anki-editor-break-consecutive-braces-in-latex t
         anki-editor-org-tags-as-anki-tags t
         anki-editor-ignored-org-tags
         (append my/notes-workflow-tags anki-editor-ignored-org-tags)))
@@ -502,7 +505,30 @@ card heading is tagged `noexport' so theme documents skip it."
   (unless (derived-mode-p 'org-mode)
     (user-error "Not in an org buffer"))
   (require 'anki-editor)
+  ;; Auto-revert keeps the old `#+property:' cache, so a deck keyword added
+  ;; outside Emacs would read as "Missing deck" until the buffer is reopened.
+  (org-set-regexps-and-options)
   (my/with-anki (anki-editor-push-notes)))
+
+(defun my/anki-card-files ()
+  "Notes in the vault that contain at least one flashcard.
+Assembled theme files are skipped: their cards belong to the source notes."
+  (seq-filter
+   (lambda (file)
+     (and (not (string-prefix-p "theme-" (file-name-nondirectory file)))
+          (with-temp-buffer
+            (insert-file-contents file)
+            (re-search-forward "^[ \t]*:ANKI_NOTE_TYPE:" nil t))))
+   (directory-files my/notes-dir t "\\`[^.#].*\\.org\\'")))
+
+(defun my/anki-push-all ()
+  "Push the new or changed cards of every note in the vault to Anki."
+  (interactive)
+  (require 'anki-editor)
+  (let ((files (my/anki-card-files)))
+    (unless files
+      (user-error "No notes with cards"))
+    (my/with-anki (anki-editor-push-notes files))))
 
 ;;; Whole-note review (tier 2)
 
@@ -584,14 +610,21 @@ bodies instead, producing a standalone file."
    (list (completing-read "Theme tag: " (org-roam-tag-completions) nil t)
          current-prefix-arg))
   (require 'org-roam)
-  (let ((rows (org-roam-db-query
-               [:select [nodes:id nodes:title nodes:file]
-                :from tags
-                :inner-join nodes :on (= tags:node-id nodes:id)
-                :where (and (= tags:tag $s1) (= nodes:level 0))
-                :order-by nodes:title]
-               tag))
-        (file (expand-file-name (format "theme-%s.org" tag) my/notes-dir)))
+  (let* ((index-tags '("lecture" "hub"))
+         ;; Lecture and hub notes are tables of contents, not content: keep
+         ;; them out unless the theme is one of those tags itself.
+         (skip (unless (member tag index-tags)
+                 (mapcan #'my/roam-files-with-tag index-tags)))
+         (rows (seq-remove
+                (lambda (row) (member (nth 2 row) skip))
+                (org-roam-db-query
+                 [:select [nodes:id nodes:title nodes:file]
+                  :from tags
+                  :inner-join nodes :on (= tags:node-id nodes:id)
+                  :where (and (= tags:tag $s1) (= nodes:level 0))
+                  :order-by nodes:title]
+                 tag)))
+         (file (expand-file-name (format "theme-%s.org" tag) my/notes-dir)))
     (unless rows
       (user-error "No notes tagged %s" tag))
     ;; Regenerating over an open copy would trigger a revert prompt.
@@ -629,6 +662,7 @@ bodies instead, producing a standalone file."
 (define-key my/notes-map (kbd "R") #'my/roam-review-agenda)
 (define-key my/notes-map (kbd "a") #'my/anki-push)
 (define-key my/notes-map (kbd "A") #'my/anki-card)
+(define-key my/notes-map (kbd "P") #'my/anki-push-all)
 
 (with-eval-after-load 'which-key
   (which-key-add-key-based-replacements "C-c n" "notes"))

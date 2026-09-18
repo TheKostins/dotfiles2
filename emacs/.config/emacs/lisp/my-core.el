@@ -52,6 +52,13 @@
 
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 
+;; Lets `emacsclient' reach this session: the notes tooling (roam.py) asks it
+;; for unsaved note buffers and runs `org-roam-db-sync' after outside edits.
+(unless noninteractive
+  (require 'server)
+  (unless (server-running-p)
+    (server-start)))
+
 (provide 'my-core)
 
 ;;; my-core.el ends here
